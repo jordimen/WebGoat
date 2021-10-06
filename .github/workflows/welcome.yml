@@ -1,9 +1,6 @@
 name: Welcome
+on: [workflow_dispatch]
 
-on:
-  issues:
-    types:
-      - opened
 
 jobs:
   greeting:

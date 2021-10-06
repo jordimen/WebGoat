@@ -22,7 +22,15 @@
 
 package org.owasp.webgoat.crypto;
 
-import lombok.extern.slf4j.Slf4j;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.KeyPair;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.DatatypeConverter;
+
 import org.owasp.webgoat.assignments.AssignmentEndpoint;
 import org.owasp.webgoat.assignments.AssignmentHints;
 import org.owasp.webgoat.assignments.AttackResult;
@@ -61,8 +69,11 @@ public class SigningAssignment extends AssignmentEndpoint {
 	
     @PostMapping("/crypto/signing/verify")
     @ResponseBody
-    public AttackResult completed(HttpServletRequest request, @RequestParam String modulus, @RequestParam String signature) {
-		
+    public AttackResult completed(HttpServletRequest request, @RequestParam String modulus, @RequestParam String signature) throws NoSuchAlgorithmException {
+
+			// Forced new Kiuwan vulnerability
+			MessageDigest md = MessageDigest.getInstance("MD5");
+
 		String tempModulus = modulus;/* used to validate the modulus of the public key but might need to be corrected */
     	KeyPair keyPair = (KeyPair) request.getSession().getAttribute("keyPair");
 		RSAPublicKey rsaPubKey = (RSAPublicKey) keyPair.getPublic();

@@ -138,7 +138,10 @@
         <maven-javadoc-plugin.version>3.1.1</maven-javadoc-plugin.version>
         <maven-source-plugin.version>3.1.0</maven-source-plugin.version>
         <maven-surefire-plugin.version>3.0.0-M4</maven-surefire-plugin.version>
-        <java.version>15</java.version>
+
+        <sonar.organization>jordimen-org</sonar.organization>
+        <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+
     </properties>
 
     <modules>
@@ -172,7 +175,67 @@
         </dependency>
     </dependencies>
 
-    <build>
+
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-compiler-plugin</artifactId>
+			<configuration>
+				<source>11</source>
+				<target>11</target>
+				<encoding>UTF-8</encoding>
+			</configuration>
+		</plugin>
+		<plugin>
+			<groupId>org.apache.maven.plugins</groupId>
+			<artifactId>maven-checkstyle-plugin</artifactId>
+			<version>3.1.0</version>
+			<configuration>
+				<encoding>UTF-8</encoding>
+				<consoleOutput>true</consoleOutput>
+				<failsOnError>true</failsOnError>
+				<configLocation>config/checkstyle/checkstyle.xml</configLocation>
+				<suppressionsLocation>config/checkstyle/suppressions.xml</suppressionsLocation>
+				<suppressionsFileExpression>checkstyle.suppressions.file</suppressionsFileExpression>
+			</configuration>
+		</plugin>
+    <!-- SpotBugs Static Analysis -->
+    <plugin>
+      <groupId>com.github.spotbugs</groupId>
+      <artifactId>spotbugs-maven-plugin</artifactId>
+      <version>4.0.4</version>
+      <configuration>
+        <effort>Max</effort>
+        <threshold>medium</threshold>
+        <failOnError>true</failOnError>
+        <includeFilterFile>${session.executionRootDirectory}/spotbugs-security-include.xml</includeFilterFile>
+        <excludeFilterFile>${session.executionRootDirectory}/spotbugs-security-exclude.xml</excludeFilterFile>
+        <plugins>
+          <plugin>
+            <groupId>com.h3xstream.findsecbugs</groupId>
+            <artifactId>findsecbugs-plugin</artifactId>
+            <version>1.11.0</version>
+          </plugin>
+        </plugins>
+      </configuration>
+    </plugin>
+	</plugins>
+</build>
+
+<profiles>
+	<profile>
+		<id>defaultProfile</id>
+		<activation>
+			<activeByDefault>true</activeByDefault>
+		</activation>		
+	</profile>
+	<profile>
+		<id>owasp</id>
+		<activation>
+			<activeByDefault>false</activeByDefault>
+		</activation>
+		    <build>
         <plugins>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
