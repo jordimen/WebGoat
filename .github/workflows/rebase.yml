@@ -1,5 +1,6 @@
 name: "Automatic Rebase"
 on: [workflow_dispatch]
+
 jobs:
   rebase:
     name: Rebase

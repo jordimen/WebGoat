@@ -1,11 +1,11 @@
 # WebGoat 8: A deliberately insecure Web Application
 
-[![Build Status](https://travis-ci.org/WebGoat/WebGoat.svg?branch=develop)](https://travis-ci.org/WebGoat/WebGoat)
+[![Build](https://github.com/WebGoat/WebGoat/actions/workflows/build.yml/badge.svg)](https://github.com/WebGoat/WebGoat/actions/workflows/build.yml)
 [![Coverage Status](https://coveralls.io/repos/WebGoat/WebGoat/badge.svg?branch=develop&service=github)](https://coveralls.io/github/WebGoat/WebGoat?branch=master)
 [![Codacy Badge](https://api.codacy.com/project/badge/b69ee3a86e3b4afcaf993f210fccfb1d)](https://www.codacy.com/app/dm/WebGoat)
-[![Dependency Status](https://www.versioneye.com/user/projects/562da95ae346d7000e0369aa/badge.svg?style=flat)](https://www.versioneye.com/user/projects/562da95ae346d7000e0369aa)
 [![OWASP Labs](https://img.shields.io/badge/owasp-lab%20project-f7b73c.svg)](https://www.owasp.org/index.php/OWASP_Project_Inventory#tab=Labs_Projects)
 [![GitHub release](https://img.shields.io/github/release/WebGoat/WebGoat.svg)](https://github.com/WebGoat/WebGoat/releases/latest)
+[![Gitter](https://badges.gitter.im/OWASPWebGoat/community.svg)](https://gitter.im/OWASPWebGoat/community?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge)
 
 # Introduction
 
@@ -27,70 +27,41 @@ you are caught engaging in unauthorized hacking, most companies will fire you.
 Claiming that you were doing security research will not work as that is the
 first thing that all hackers claim.*
 
-# Installation Instructions:
+# Installation instructions:
 
-## 1. Standalone
-
-Download the latest WebGoat release from [https://github.com/WebGoat/WebGoat/releases](https://github.com/WebGoat/WebGoat/releases)
-
-```Shell
-java -jar webgoat-server-8.0.0.VERSION.jar [--server.port=8080] [--server.address=localhost]
-```
-
-The latest version of WebGoat needs Java 11 or above. By default WebGoat starts on port 8080 with `--server.port` you can specify a different port. With `server.address` you
-can bind it to a different address (default localhost)
-
-
-## 2. Run using Docker
+## 1. Run using Docker
 
 Every release is also published on [DockerHub]((https://hub.docker.com/r/webgoat/webgoat-8.0/)).
-
-### Using docker run
 
 The easiest way to start WebGoat as a Docker container is to use the all-in-one docker container. This is a docker image that has WebGoat and WebWolf running inside.
 
 ```shell
-docker run -d -p 8080:8080 -p 9090:9090 -e TZ=Europe/Amsterdam webgoat/goatandwolf
+docker run -p 127.0.0.1:8080:8080 -p 127.0.0.1:9090:9090 -e TZ=Europe/Amsterdam webgoat/goatandwolf
 ```
 
 WebGoat will be located at: http://127.0.0.1:8080/WebGoat
 WebWolf will be located at: http://127.0.0.1:9090/WebWolf
 
-**Important**: Choose the correct timezone, so that the docker container and your host are in the same timezone. As it important for the validity of JWT tokens used in certain exercises.
+**Important**: Choose the correct timezone, so that the docker container and your host are in the same timezone. As it is important for the validity of JWT tokens used in certain exercises.
 
-### Using docker stack deploy
 
-Another way to deply WebGoat and WebWolf in a more advanced way is to use a compose-file in a docker stack deploy.
-You can define which containers should run in which combinations and define all of this in a yaml file.
-An example of such a file is: [goat-with-reverseproxy.yaml](goat-with-reverseproxy.yaml)
+## 2. Standalone
 
-This sets up an nginx webserver as reverse proxy to WebGoat and WebWolf. You can change the timezone by adjusting the value in the yaml file.
+Download the latest WebGoat and WebWolf release from [https://github.com/WebGoat/WebGoat/releases](https://github.com/WebGoat/WebGoat/releases)
 
 ```shell
-docker stack init
-docker stack deploy --compose-file goat-with-reverseproxy.yaml webgoatdemo
+java -jar webgoat-server-8.2.1.jar [--server.port=8080] [--server.address=localhost] [--hsqldb.port=9001]
+java -jar webwolf-8.2.1.jar [--server.port=9090] [--server.address=localhost] [--hsqldb.port=9001]
 ```
 
-Add the following entries in your local hosts file:
-
-```shell
-127.0.0.1 www.webgoat.local www.webwolf.localhost
-```
-
-You can use the overall start page: http://www.webgoat.local or:
-
-WebGoat will be located at: http://www.webgoat.local/WebGoat
-
-WebWolf will be located at: http://www.webwolf.local/WebWolf
-
-**Important**: the current directory on your host will be mapped into the container for keeping state.
-
+WebGoat will be located at: http://127.0.0.1:8080/WebGoat and 
+WebWolf will be located at: http://127.0.0.1:9090/WebWolf (change ports if necessary)
 
 ## 3. Run from the sources
 
 ### Prerequisites:
 
-* Java 11
+* Java 15
 * Maven > 3.2.1
 * Your favorite IDE
 * Git, or Git support in your IDE
@@ -117,26 +88,23 @@ mvn -pl webgoat-server spring-boot:run
 ... you should be running webgoat on localhost:8080/WebGoat momentarily
 
 
-To change IP address add the following variable to WebGoat/webgoat-container/src/main/resources/application.properties file
+To change the IP address add the following variable to the WebGoat/webgoat-container/src/main/resources/application.properties file:
 
 ```
 server.address=x.x.x.x
 ```
 
-# Building a new Docker image
+## 4. Run with custom menu
 
-NOTE: Travis will create a new Docker image automatically when making a new release.
+For specialist only. There is a way to set up WebGoat with a personalized menu. You can leave out some menu categories or individual lessons by setting certain environment variables.
 
+For instance running as a jar on a Linux/macOS it will look like this:
 ```Shell
-cd WebGoat/
-mvn install
-cd webgoat-server
-docker build -t webgoat/webgoat-8.0 .
-docker tag webgoat/webgoat-8.0 webgoat/webgoat-8.0:8.0
-docker login
-docker push webgoat/webgoat-8.0
+export EXCLUDE_CATEGORIES="CLIENT_SIDE,GENERAL,CHALLENGE"
+export EXCLUDE_LESSONS="SqlInjectionAdvanced,SqlInjectionMitigations"
+java -jar webgoat-server/target/webgoat-server-v8.2.0-SNAPSHOT.jar
 ```
-
-# Run Instructions:
-
-Once installed connect to http://localhost:8080/WebGoat and http://localhost:9090/WebWolf
+Or in a docker run it would (once this version is pushed into docker hub) look like this:
+```Shell
+docker run -d -p 80:8888 -p 8080:8080 -p 9090:9090 -e TZ=Europe/Amsterdam -e EXCLUDE_CATEGORIES="CLIENT_SIDE,GENERAL,CHALLENGE" -e EXCLUDE_LESSONS="SqlInjectionAdvanced,SqlInjectionMitigations" webgoat/goatandwolf
+```

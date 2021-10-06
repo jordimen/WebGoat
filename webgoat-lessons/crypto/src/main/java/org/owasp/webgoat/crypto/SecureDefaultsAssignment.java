@@ -33,6 +33,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.security.NoSuchAlgorithmException;
+
 @RestController
 @AssignmentHints({"crypto-secure-defaults.hints.1", "crypto-secure-defaults.hints.2", "crypto-secure-defaults.hints.3"})
 public class SecureDefaultsAssignment extends AssignmentEndpoint {
